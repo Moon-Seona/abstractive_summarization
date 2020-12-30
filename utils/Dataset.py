@@ -58,10 +58,11 @@ class Dataset(data.Dataset):
             #ex2['src'] = self.token(ex2['src'])
             #ex2['tgt'] = self.token_abs(ex2['tgt'])
             
-            return ex2
-        else :
-            ex2 = {'src': '\n'.join(ab['article_original'])}
-            return ex2
+            #return ex2
+        else : # test
+            ex2 = {'src': '\n'.join(ab['article_original']), 'tgt' : 'nan'}
+            
+        return ex2
 
         #words = ex['sents'].split()
         #guess = np.random.random()
