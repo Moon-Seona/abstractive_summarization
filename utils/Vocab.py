@@ -29,9 +29,7 @@ class Vocab():
         
         batch_sents = []
         # src
-        for doc in batch['src']: # eunumerate 로 한번에 해결?
-            #sents = doc.split(split_token) # line
-            #sent=re.sub('','',doc)
+        for doc in batch['src']: 
             words = self.tok.morphs(doc) # change
             
             max_sent_len = min(doc_trunc, len(words))
@@ -52,26 +50,16 @@ class Vocab():
         # tgt
         for doc in batch['tgt']:
             
-            #print(doc)
-            
-            if test : 
+            if test : # test set 은 tgt에 대한 정보 없.. 
                 targets = torch.zeros((1,64), dtype=torch.long)
-                #targets = torch.LongTensor(targets)
-                
             else :
-                #sents = doc.split(' ') # word
-                #sent=re.sub('','',doc)
                 words = self.tok.morphs(doc)
 
-                #max_sent_num = min(doc_trunc, len(words))
                 if len(words) > sent_trunc:
                     words = words[:sent_trunc]
                 max_sent_len = len(words) if len(words) > max_sent_len else max_sent_len
                 batch_sents2.append(words)
 
-                #sents = sents[:max_sent_num]            
-                #sents_list += sents
-                #sents_list.append(sents)
                 targets = []
                 for sent in batch_sents2:
                     target = self.vocab[sent] + [self.PAD_IDX for _ in range(max_sent_len - len(sent))]
@@ -79,41 +67,23 @@ class Vocab():
 
                 targets = torch.LongTensor(targets)
         
-        
-        return features, targets #, batch_sents
-
+        return features, targets 
     
-    def make_sents(self, output): # num to word
+    def make_sents(self, output): # num to word, 함수를 통해 한문장 
         
         batch_sent = ''
     
-        for pred in output: # 80000 # 49990 까지는 가능 -> embedding dim 줄여야함
+        for pred in output: # 80000 -> 49990 까지는 가능 -> embedding dim 줄여야함
             
-            #sent_list = self.vocab.to_tokens(torch.argsort(pred,descending=False).squeeze().cpu().numpy().tolist())[:64] # tgt len
-            #sent = ''
+            # 가장 확률이 높은 단어 선택
             sent = self.vocab.to_tokens(torch.argsort(pred,descending=False).squeeze().cpu().numpy().tolist())[0]
-            #print(sent)
             
-            #for i in range(len(sent_list)) : # ▁현대
-            #    
-            #    if sent_list[i].startswith('<') :
-            #        continue
-            #    if sent_list[i].endswith('다') :
-            #        sent += sent_list[i].replace('▁', ' ')
-            #        sent += '.'
-            #        continue
-            #    sent += sent_list[i].replace('▁', ' ')
-            if sent.startswith('<') :
+            if sent.startswith('<') : # ex. <unused12>
                 continue
-            if sent.endswith('다') :
+            if sent.endswith('다') : # 문장의 완성으로 해석
                 batch_sent += sent.replace('▁', ' ')
                 batch_sent += '.'
-                continue
+                continue # continue말고 break로 바꿔야 하나???
             batch_sent += sent.replace('▁', ' ')
-            
-            #batch_sents.append(sent)
-            
-        #print(batch_sent)
-        
                
         return batch_sent

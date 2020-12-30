@@ -12,7 +12,6 @@ import re
 class Dataset(data.Dataset):
     def __init__(self, examples):
         super(Dataset, self).__init__()
-        # data: {'sents':xxxx,'labels':'xxxx', 'summaries':[1,0]}
         self.examples = examples
         self.training = False
         
@@ -44,57 +43,12 @@ class Dataset(data.Dataset):
     def __getitem__(self, idx):
         ab = self.examples[idx]
                 
-        if('abstractive' in ab) :
-            #ex2 = ab[['article_original', 'abstractive']] # df
-            #ex2 = dict(zip(ab.article_original, ab.abstractive))
-            
-            #ex2 = ab.to_dict('list')
-            #ex2 = dict(zip(ab.article_original, ab.abstractive))
-            
+        if('abstractive' in ab) : # label이 존재
             ex2 = {'src': '\n'.join(ab['article_original']),'tgt': ab['abstractive']} # 수정한 부분: join 명령어로 튜플을 하나의 문장으로 결합
-            
-            #ex2 = ex2[['article_original', 'abstractive']]
-            
-            #ex2['src'] = self.token(ex2['src'])
-            #ex2['tgt'] = self.token_abs(ex2['tgt'])
-            
-            #return ex2
-        else : # test
+        else : # test, label이 없음
             ex2 = {'src': '\n'.join(ab['article_original']), 'tgt' : 'nan'}
             
         return ex2
 
-        #words = ex['sents'].split()
-        #guess = np.random.random()
-
-        #if self.training:
-        #    if guess > 0.5:
-        #        sents = self.dropout(words,p=0.3)
-        #    else:
-        #        sents = self.shuffle(words)
-        #else:
-        #    sents = ex['sents']
-        #return {'id':ex['id'],'sents':sents,'labels':ex['labels']}
-    '''
-    def __getitem__(self, idx):
-        ex = self.examples[idx]
-
-
-        label = ''
-        if('extractive' in ex):
-            for i in range(len(ex['article_original'])):
-                if i in ex['extractive']:
-                    label += '1\n'
-                else:
-                    label += '0\n'
-            ex2 = {'doc': '\n'.join(ex['article_original']) ,'labels': label.strip() , 'summaries': ex['abstractive']}
-
-            return ex2
-
-        else:
-
-            ex2 = {'doc': '\n'.join(ex['article_original'])}
-            return ex2
-    '''
     def __len__(self):
         return len(self.examples)

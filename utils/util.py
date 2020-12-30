@@ -5,17 +5,13 @@ from sklearn.preprocessing import OrdinalEncoder
 
 
 def load_json_asDataFrame(input_path):
-    result = pd.DataFrame()#pd.DataFrame(columns=['media', 'id', 'article_original', 'abstractive', 'extractive'])
-    #print(result)
-    with open(input_path, 'r') as json_file: # 42803
+    result = pd.DataFrame()
+    with open(input_path, 'r') as json_file: 
         json_list = list(json_file)
     for json_str in json_list:
-        #result.append(list(json.loads(json_str).values()))
         ddata = json.loads(json_str)
         df = pd.DataFrame(data=[list(ddata.values())],columns=list(ddata.keys()))
         result = result.append(df)
-        #print(result)
-
     return result[['article_original', 'abstractive']]
 
 def load_jsonl(input_path) -> list:
